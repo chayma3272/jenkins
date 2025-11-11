@@ -9,7 +9,7 @@ TAG = "build-${env.BUILD_NUMBER}"
 stage('Checkout') {
 steps { checkout scm } // lit le même repo que le job
 }
-stage('Docker Build') {
+stage('Docker Build') { // creation d image
 steps {
 bat 'docker version'
 bat "docker build -t %IMAGE%:%TAG% ."
@@ -19,9 +19,9 @@ stage('Smoke Test') {
 steps {
 bat """
 docker rm -f monapp_test 2>nul || ver > nul
-docker run -d --name monapp_test -p 8081:80 %IMAGE%:%TAG%
+docker run -d --name monapp_test -p 8080:80 %IMAGE%:%TAG% 
 ping -n 3 127.0.0.1 > nul
-curl -I http://localhost:8081 | find "200 OK"
+curl -I http://localhost:8080 | find "200 OK"
 docker rm -f monapp_test
 """
 }
